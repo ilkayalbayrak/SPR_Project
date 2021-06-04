@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Text2SpeechProject</string>
+    <string name="pitch">Pitch</string>
+    <string name="speed">Speed</string>
+    <string name="button_speak">SAY OUT LOUD!!</string>
+    <string name="input_text">Enter the text</string>
 </resources>

@@ -12,14 +12,15 @@
         android:id="@+id/input_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter the Text"
+        android:hint="@string/input_text"
         android:layout_marginBottom="16dp"
+        android:inputType="textMultiLine"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pitch"
+        android:text="@string/pitch"
         android:textSize="16sp"
         />
     <SeekBar
@@ -31,7 +32,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Speed"
+        android:text="@string/speed"
         android:textSize="16sp"
         />
     <SeekBar
@@ -45,9 +46,8 @@
         android:id="@+id/button_speak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Say out loud!!"
+        android:text="@string/button_speak"
         android:layout_gravity="center_horizontal"
         android:enabled="false"/>
-
 
 </LinearLayout>
