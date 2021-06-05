@@ -17,11 +17,33 @@
         android:inputType="textMultiLine"
         />
 
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radio_fr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="French" />
+
+        <RadioButton
+            android:checked="true"
+            android:id="@+id/radio_en"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="English" />
+    </RadioGroup>
+
+
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/pitch"
         android:textSize="16sp"
+        android:layout_marginTop="16dp"
         />
     <SeekBar
         android:id="@+id/seek_bar_pitch"
@@ -49,5 +71,13 @@
         android:text="@string/button_speak"
         android:layout_gravity="center_horizontal"
         android:enabled="false"/>
+
+    <Button
+        android:id="@+id/button_select_language"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="select language"
+        android:layout_gravity="center_horizontal"/>
+
 
 </LinearLayout>

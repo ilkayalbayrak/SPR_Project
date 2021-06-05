@@ -1,6 +1,9 @@
 package com.example.text2speechproject;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.AudioAttributes;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
@@ -8,13 +11,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -26,6 +34,11 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private SeekBar mSeekBarPitch;
     private SeekBar mSeekBarSpeed;
     private Button mButtonSpeak;
+    private RadioGroup mRadioGroup;
+    private RadioButton mRadio_fr;
+    private RadioButton mRadio_en;
+
+    private boolean isAppReady = false;
 
     private final int ttsInstalled = 0;
 
@@ -38,62 +51,120 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mEditText = findViewById(R.id.input_text);
         mSeekBarPitch = findViewById(R.id.seek_bar_pitch);
         mSeekBarSpeed = findViewById(R.id.seek_bar_speed);
-        mTts = new TextToSpeech(this,this);
-//        TtsInfo = new HashMap<>();
-//        Locale[] avLanguages = Locale.getAvailableLocales();
-//        Log.d("");
-//        System.out.println("\n\n\n");
-//        System.out.println("**************************************************** "+mTts.getLanguage());
-//        if(avLanguages != null) {
-//            for (Locale lang : avLanguages) {
-//                System.out.println("**************************************************** " + lang.toString());
-//
-//            }
-//        } else {
-//            System.out.println("****************************************************############# " + "NULL");
-//
-//        }
-//        System.out.println("\n\n\n");
-        mButtonSpeak.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speak();
-            }
+        mRadioGroup = findViewById(R.id.radioGroup);
+        mRadio_fr = findViewById(R.id.radio_fr);
+        mRadio_en = findViewById(R.id.radio_en);
+
+        mButtonSpeak.setOnClickListener(v -> speak());
+        mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            setTTSLanguage();
         });
+
+        checkTTSEngine();
     }
 
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
-            int isLanguageAvailable = mTts.isLanguageAvailable(Locale.US);
-            if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
-                mTts.setLanguage(Locale.US);
-                mTts.setVoice(new Voice("en-us-x-sfg#female_2-local", Locale.US, Voice.QUALITY_VERY_HIGH,
-                        Voice.LATENCY_NORMAL, false, new HashSet<>()));
-                mButtonSpeak.setEnabled(true);
-            } else {
-                isLanguageAvailable = mTts.isLanguageAvailable(Locale.UK);
-                if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
-                    mTts.setLanguage(Locale.UK);
-                    mTts.setVoice(new Voice("en-gb-x-sfg#female_2-local", Locale.UK, Voice.QUALITY_VERY_HIGH,
-                            Voice.LATENCY_NORMAL, false, new HashSet<>()));
-                    mButtonSpeak.setEnabled(true);
-                } else {
-                    Toast.makeText(this, "Failed to set the main language for the TTS engine!"
-                            + " Using default locale instead...", Toast.LENGTH_SHORT).show();
-
-                    mTts.setLanguage(Locale.getDefault());
-                    mTts.setVoice(new Voice("Default voice", Locale.getDefault(), Voice.QUALITY_VERY_HIGH,
-                            Voice.LATENCY_NORMAL, false, new HashSet<>()));
-                    mButtonSpeak.setEnabled(true);
-                }
-            }
+            printOutSupportedLanguages();
+            setTTSLanguage();
+//            int isLanguageAvailable = mTts.isLanguageAvailable(Locale.US);
+//            if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
+//                mTts.setLanguage(Locale.US);
+//                mTts.setVoice(new Voice("en-us-x-sfg#female_2-local", Locale.US, Voice.QUALITY_VERY_HIGH,
+//                        Voice.LATENCY_NORMAL, false, new HashSet<>()));
+//                mButtonSpeak.setEnabled(true);
+//            } else {
+//                isLanguageAvailable = mTts.isLanguageAvailable(Locale.UK);
+//                if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
+//                    mTts.setLanguage(Locale.UK);
+//                    mTts.setVoice(new Voice("en-gb-x-sfg#female_2-local", Locale.UK, Voice.QUALITY_VERY_HIGH,
+//                            Voice.LATENCY_NORMAL, false, new HashSet<>()));
+//                    mButtonSpeak.setEnabled(true);
+//                } else {
+//                    Toast.makeText(this, "Failed to set the main language for the TTS engine!"
+//                            + " Using default locale instead...", Toast.LENGTH_SHORT).show();
+//
+//                    mTts.setLanguage(Locale.getDefault());
+//                    mTts.setVoice(new Voice("Default voice", Locale.getDefault(), Voice.QUALITY_VERY_HIGH,
+//                            Voice.LATENCY_NORMAL, false, new HashSet<>()));
+//                    mButtonSpeak.setEnabled(true);
+//                }
+//            }
 
         } else if (status == TextToSpeech.ERROR){
             Log.e("TTS", "Initialization failed");
             Toast.makeText(this,"Unfortunately, TTS engine initialization failed...", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == ttsInstalled){
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS){
+                // initalize tts engine
+                mTts = new TextToSpeech(this,this, "com.google.android.tts");
+
+                // Some audio configs to configure our synthesized speech
+                // but it requires level 26 api, and currently this app supports min 21 leve
+//                AudioAttributes audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANT)
+//                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build();
+//
+//
+            }
+
+        }
+
+    }
+
+//    private List<String> getListOfLocales(Locale[] locales){
+//        List<String> result = new ArrayList<>(locales)
+//    }
+
+    private void printOutSupportedLanguages(){
+        // Supported languages
+        Set<Locale> supportedLanguages = mTts.getAvailableLanguages();
+        if (supportedLanguages != null) {
+            for (Locale lang : supportedLanguages){
+                Log.e("TTS","Supported Language: "+ lang);
+            }
+        }
+    }
+
+    private Locale getUserSelectedLanguage(){
+        int checkedRadioId = this.mRadioGroup.getCheckedRadioButtonId();
+        if (checkedRadioId == R.id.radio_en){
+            return Locale.US;
+        }else if(checkedRadioId == R.id.radio_fr){
+            return Locale.FRENCH;
+        }
+        return null;
+    }
+
+    private void setTTSLanguage(){
+        Locale localeLanguage = this.getUserSelectedLanguage();
+        int isLanguageAvailable = mTts.isLanguageAvailable(localeLanguage);
+
+        // if the user did not selected any language, set the language and the voice to default
+        if(localeLanguage == null || (isLanguageAvailable == TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable == TextToSpeech.LANG_NOT_SUPPORTED)){
+            Toast.makeText(this, "Failed to set the main language for the TTS engine!"
+                    + " Using default locale instead...", Toast.LENGTH_SHORT).show();
+
+            mTts.setLanguage(Locale.getDefault());
+            mTts.setVoice(new Voice("Default voice", Locale.getDefault(), Voice.QUALITY_VERY_HIGH,
+                    Voice.LATENCY_NORMAL, false, new HashSet<>()));
+            mButtonSpeak.setEnabled(true);
+
+        }else if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
+            mTts.setLanguage(localeLanguage);
+            mTts.setVoice(new Voice("Default voice", localeLanguage, Voice.QUALITY_VERY_HIGH,
+                    Voice.LATENCY_NORMAL, false, new HashSet<>()));
+            mButtonSpeak.setEnabled(true);
+        }
+    }
+
     private void selectLanguage(){
 //        mTts.get
     }
