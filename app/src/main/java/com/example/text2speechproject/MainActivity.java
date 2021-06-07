@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private SeekBar mSeekBarPitch;
     private SeekBar mSeekBarSpeed;
     private Button mButtonSpeak;
+    private Button mButtonRandom;
     private RadioGroup mRadioGroup;
     private RadioButton mRadio_fr;
     private RadioButton mRadio_en;
@@ -48,17 +49,17 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         setContentView(R.layout.activity_main);
 
         mButtonSpeak = findViewById(R.id.button_speak);
+        mButtonRandom = findViewById(R.id.button_random_test);
         mEditText = findViewById(R.id.input_text);
         mSeekBarPitch = findViewById(R.id.seek_bar_pitch);
         mSeekBarSpeed = findViewById(R.id.seek_bar_speed);
         mRadioGroup = findViewById(R.id.radioGroup);
         mRadio_fr = findViewById(R.id.radio_fr);
-        mRadio_en = findViewById(R.id.radio_en);
+        mRadio_en = findViewById(R.id.radio_en_us);
 
         mButtonSpeak.setOnClickListener(v -> speak());
-        mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            setTTSLanguage();
-        });
+        mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> setTTSLanguage());
+        mButtonRandom.setOnClickListener(v -> printOutSupportedVoices());
 
         checkTTSEngine();
     }
@@ -133,10 +134,26 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     }
 
+    private void printOutSupportedVoices(){
+        Set<Voice> availableVoices = mTts.getVoices();
+        if (availableVoices != null){
+            for (Voice voice : availableVoices){
+                Log.e("TTS","Available Voice: " + voice);
+//                Locale.US.get
+            }
+        }
+    }
+
+    /*
+    * Gets the locale selection from the radio buttons
+    * then this selection is used for determining the synthesis language
+    * */
     private Locale getUserSelectedLanguage(){
         int checkedRadioId = this.mRadioGroup.getCheckedRadioButtonId();
-        if (checkedRadioId == R.id.radio_en){
+        if (checkedRadioId == R.id.radio_en_us){
             return Locale.US;
+        }else if(checkedRadioId == R.id.radio_en_uk){
+            return Locale.UK;
         }else if(checkedRadioId == R.id.radio_fr){
             return Locale.FRENCH;
         }

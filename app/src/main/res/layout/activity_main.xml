@@ -26,14 +26,21 @@
             android:id="@+id/radio_fr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="French" />
+            android:text="@string/radio_fr" />
 
         <RadioButton
             android:checked="true"
-            android:id="@+id/radio_en"
+            android:id="@+id/radio_en_us"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="English" />
+            android:text="@string/radio_en_us" />
+
+        <RadioButton
+            android:checked="true"
+            android:id="@+id/radio_en_uk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_en_uk" />
     </RadioGroup>
 
 
@@ -73,10 +80,10 @@
         android:enabled="false"/>
 
     <Button
-        android:id="@+id/button_select_language"
+        android:id="@+id/button_random_test"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="select language"
+        android:text="Random test button"
         android:layout_gravity="center_horizontal"/>
 
 
