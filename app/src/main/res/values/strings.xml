@@ -5,6 +5,8 @@
     <string name="button_speak">SAY OUT LOUD!!</string>
     <string name="input_text">Enter the text</string>
     <string name="radio_fr">French</string>
+    <string name="radio_it">Italian</string>
     <string name="radio_en_us">English (US)</string>
     <string name="radio_en_uk">English (UK)</string>
+    <string name="radio_de">German</string>
 </resources>

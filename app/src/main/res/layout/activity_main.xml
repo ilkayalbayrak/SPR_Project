@@ -23,12 +23,6 @@
         android:layout_height="wrap_content">
 
         <RadioButton
-            android:id="@+id/radio_fr"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/radio_fr" />
-
-        <RadioButton
             android:checked="true"
             android:id="@+id/radio_en_us"
             android:layout_width="match_parent"
@@ -41,6 +35,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/radio_en_uk" />
+
+        <RadioButton
+            android:id="@+id/radio_fr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_fr" />
+
+        <RadioButton
+            android:id="@+id/radio_it"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_it" />
+
+        <RadioButton
+            android:id="@+id/radio_de"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_de" />
+
     </RadioGroup>
 
 

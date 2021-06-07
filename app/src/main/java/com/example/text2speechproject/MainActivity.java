@@ -41,6 +41,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private boolean isAppReady = false;
 
+    private HashMap<Locale, List<String>> voiceOptionsList = new HashMap<>();
+    private List<String> usVoices = new ArrayList<>();
+    private List<String> ukVoices = new ArrayList<>();
+    private List<String> frenchVoices = new ArrayList<>();
+    private List<String> italianVoices = new ArrayList<>();
+    private List<String> germanVoices = new ArrayList<>();
+
     private final int ttsInstalled = 0;
 
     @Override
@@ -61,7 +68,31 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> setTTSLanguage());
         mButtonRandom.setOnClickListener(v -> printOutSupportedVoices());
 
+
+
+
+        usVoices.add("en-us-x-sfg#female_1-local");
+        usVoices.add("en-us-x-sfg#male_1-local");
+        voiceOptionsList.put(Locale.US, usVoices);
+
+        ukVoices.add("en-gb-x-rjs#female_1-local");
+        ukVoices.add("en-gb-x-rjs#male_1-local");
+        voiceOptionsList.put(Locale.UK, ukVoices);
+
+        frenchVoices.add("fr-fr-x-vlf#female_1-local");
+        frenchVoices.add("fr-fr-x-vlf#male_1-local");
+        voiceOptionsList.put(Locale.FRENCH, frenchVoices);
+
+        italianVoices.add("it-it-x-kda#female_1-local");
+        italianVoices.add("it-it-x-kda#male_1-local");
+        voiceOptionsList.put(Locale.ITALIAN, italianVoices);
+
+        germanVoices.add("de-de-x-nfh#female_1-local");
+        germanVoices.add("de-de-x-nfh#male_1-local");
+        voiceOptionsList.put(Locale.GERMAN, germanVoices);
+
         checkTTSEngine();
+
     }
 
     @Override
@@ -114,6 +145,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 //                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build();
 //
 //
+            }else {
+                Toast.makeText(this, "There is NO TTS available! Please install the Google TTS engine"+
+                        " from the Play Store.", Toast.LENGTH_LONG).show();
+
+                Intent installTTSEngineIntent = new Intent()
+                        .setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(installTTSEngineIntent);
             }
 
         }
@@ -138,8 +176,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Set<Voice> availableVoices = mTts.getVoices();
         if (availableVoices != null){
             for (Voice voice : availableVoices){
-                Log.e("TTS","Available Voice: " + voice);
+                if (!voice.isNetworkConnectionRequired() &&  !voice.getFeatures().contains("notInstalled")){
+//                if (!voice.isNetworkConnectionRequired() && mTts.getVoice().getLocale().toString().equals(voice.getLocale().toString())){
+//                    Log.e("TTS","Available Voice: " + voice);
+                    Log.e("TTS", "Current Locale: " + voice);
 //                Locale.US.get
+//                }else {
+//                    Log.e("TTS", "Current Locale: NULLLLLLLLLLLLLLL");
+
+                }
             }
         }
     }
@@ -156,16 +201,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             return Locale.UK;
         }else if(checkedRadioId == R.id.radio_fr){
             return Locale.FRENCH;
+        }else if(checkedRadioId == R.id.radio_it){
+            return Locale.ITALIAN;
+        }else if(checkedRadioId == R.id.radio_de) {
+            return Locale.GERMAN;
         }
         return null;
     }
 
     private void setTTSLanguage(){
-        Locale localeLanguage = this.getUserSelectedLanguage();
-        int isLanguageAvailable = mTts.isLanguageAvailable(localeLanguage);
+        Locale selectedLanguage = this.getUserSelectedLanguage();
+        int isLanguageAvailable = mTts.isLanguageAvailable(selectedLanguage);
 
         // if the user did not selected any language, set the language and the voice to default
-        if(localeLanguage == null || (isLanguageAvailable == TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable == TextToSpeech.LANG_NOT_SUPPORTED)){
+        if(selectedLanguage == null || (isLanguageAvailable == TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable == TextToSpeech.LANG_NOT_SUPPORTED)){
             Toast.makeText(this, "Failed to set the main language for the TTS engine!"
                     + " Using default locale instead...", Toast.LENGTH_SHORT).show();
 
@@ -175,17 +224,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             mButtonSpeak.setEnabled(true);
 
         }else if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
-            mTts.setLanguage(localeLanguage);
-            mTts.setVoice(new Voice("Default voice", localeLanguage, Voice.QUALITY_VERY_HIGH,
+            mTts.setLanguage(selectedLanguage);
+            mTts.setVoice(new Voice("Default voice", selectedLanguage, Voice.QUALITY_VERY_HIGH,
                     Voice.LATENCY_NORMAL, false, new HashSet<>()));
             mButtonSpeak.setEnabled(true);
         }
     }
 
-    private void selectLanguage(){
-//        mTts.get
+    private void selectVoice(){
+
     }
-    private void selectVoice(){}
 
     private void selectFont(){}
 
