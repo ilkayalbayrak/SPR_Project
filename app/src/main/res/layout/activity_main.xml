@@ -1,103 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".MainActivity">
+    android:fillViewport="true">
 
-    <EditText
-        android:id="@+id/input_text"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/input_text"
-        android:layout_marginBottom="16dp"
-        android:inputType="textMultiLine"
-        />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context=".MainActivity">
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <RadioButton
-            android:checked="true"
-            android:id="@+id/radio_en_us"
+        <EditText
+            android:id="@+id/input_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/radio_en_us" />
+            android:hint="@string/input_text"
+            android:layout_marginBottom="16dp"
+            android:inputType="textMultiLine"
+            />
 
-        <RadioButton
-            android:checked="true"
-            android:id="@+id/radio_en_uk"
+        <RadioGroup
+            android:id="@+id/radioGroup_languages"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/radio_en_uk" />
+            android:layout_height="wrap_content">
 
-        <RadioButton
-            android:id="@+id/radio_fr"
+            <RadioButton
+                android:checked="true"
+                android:id="@+id/radio_en_us"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_en_us" />
+
+            <RadioButton
+                android:checked="true"
+                android:id="@+id/radio_en_uk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_en_uk" />
+
+            <RadioButton
+                android:id="@+id/radio_fr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_fr" />
+
+            <RadioButton
+                android:id="@+id/radio_it"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_it" />
+
+            <RadioButton
+                android:id="@+id/radio_de"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_de" />
+
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/radioGroup_voices"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/radio_voice_1"
+                android:checked="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_voice_1" />
+
+            <RadioButton
+                android:id="@+id/radio_voice_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_voice_2" />
+
+
+        </RadioGroup>
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/radio_fr" />
-
-        <RadioButton
-            android:id="@+id/radio_it"
-            android:layout_width="match_parent"
+            android:text="@string/pitch"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            />
+        <SeekBar
+            android:id="@+id/seek_bar_pitch"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:text="@string/radio_it" />
+            android:progress="50"/>
 
-        <RadioButton
-            android:id="@+id/radio_de"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/radio_de" />
+            android:text="@string/speed"
+            android:textSize="16sp"
+            />
+        <SeekBar
+            android:id="@+id/seek_bar_speed"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:progress="50"
+            android:layout_marginBottom="16dp"/>
 
-    </RadioGroup>
+        <Button
+            android:id="@+id/button_speak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_speak"
+            android:layout_gravity="center_horizontal"
+            android:enabled="false"/>
 
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pitch"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp"
-        />
-    <SeekBar
-        android:id="@+id/seek_bar_pitch"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:progress="50"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/speed"
-        android:textSize="16sp"
-        />
-    <SeekBar
-        android:id="@+id/seek_bar_speed"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:progress="50"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/button_speak"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_speak"
-        android:layout_gravity="center_horizontal"
-        android:enabled="false"/>
-
-    <Button
-        android:id="@+id/button_random_test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Random test button"
-        android:layout_gravity="center_horizontal"/>
+        <Button
+            android:id="@+id/button_random_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Random test button"
+            android:layout_gravity="center_horizontal"/>
 
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -9,4 +9,6 @@
     <string name="radio_en_us">English (US)</string>
     <string name="radio_en_uk">English (UK)</string>
     <string name="radio_de">German</string>
+    <string name="radio_voice_1">Voice-1</string>
+    <string name="radio_voice_2">Voice-2</string>
 </resources>

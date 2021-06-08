@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
@@ -35,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private SeekBar mSeekBarSpeed;
     private Button mButtonSpeak;
     private Button mButtonRandom;
-    private RadioGroup mRadioGroup;
+    private RadioGroup mRadioGroup_languages;
+    private RadioGroup mRadioGroup_voices;
     private RadioButton mRadio_fr;
     private RadioButton mRadio_en;
 
@@ -60,12 +62,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mEditText = findViewById(R.id.input_text);
         mSeekBarPitch = findViewById(R.id.seek_bar_pitch);
         mSeekBarSpeed = findViewById(R.id.seek_bar_speed);
-        mRadioGroup = findViewById(R.id.radioGroup);
+        mRadioGroup_languages = findViewById(R.id.radioGroup_languages);
+        mRadioGroup_voices = findViewById(R.id.radioGroup_voices);
         mRadio_fr = findViewById(R.id.radio_fr);
         mRadio_en = findViewById(R.id.radio_en_us);
 
         mButtonSpeak.setOnClickListener(v -> speak());
-        mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> setTTSLanguage());
+        mRadioGroup_languages.setOnCheckedChangeListener((group, checkedId) -> setTTSLanguage());
+        mRadioGroup_voices.setOnCheckedChangeListener((group, checkedId) -> setTTSVoice(this.getUserSelectedLanguage()));
         mButtonRandom.setOnClickListener(v -> printOutSupportedVoices());
 
 
@@ -100,30 +104,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (status == TextToSpeech.SUCCESS) {
             printOutSupportedLanguages();
             setTTSLanguage();
-//            int isLanguageAvailable = mTts.isLanguageAvailable(Locale.US);
-//            if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
-//                mTts.setLanguage(Locale.US);
-//                mTts.setVoice(new Voice("en-us-x-sfg#female_2-local", Locale.US, Voice.QUALITY_VERY_HIGH,
-//                        Voice.LATENCY_NORMAL, false, new HashSet<>()));
-//                mButtonSpeak.setEnabled(true);
-//            } else {
-//                isLanguageAvailable = mTts.isLanguageAvailable(Locale.UK);
-//                if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
-//                    mTts.setLanguage(Locale.UK);
-//                    mTts.setVoice(new Voice("en-gb-x-sfg#female_2-local", Locale.UK, Voice.QUALITY_VERY_HIGH,
-//                            Voice.LATENCY_NORMAL, false, new HashSet<>()));
-//                    mButtonSpeak.setEnabled(true);
-//                } else {
-//                    Toast.makeText(this, "Failed to set the main language for the TTS engine!"
-//                            + " Using default locale instead...", Toast.LENGTH_SHORT).show();
-//
-//                    mTts.setLanguage(Locale.getDefault());
-//                    mTts.setVoice(new Voice("Default voice", Locale.getDefault(), Voice.QUALITY_VERY_HIGH,
-//                            Voice.LATENCY_NORMAL, false, new HashSet<>()));
-//                    mButtonSpeak.setEnabled(true);
-//                }
-//            }
-
         } else if (status == TextToSpeech.ERROR){
             Log.e("TTS", "Initialization failed");
             Toast.makeText(this,"Unfortunately, TTS engine initialization failed...", Toast.LENGTH_SHORT).show();
@@ -158,9 +138,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     }
 
-//    private List<String> getListOfLocales(Locale[] locales){
-//        List<String> result = new ArrayList<>(locales)
-//    }
 
     private void printOutSupportedLanguages(){
         // Supported languages
@@ -194,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     * then this selection is used for determining the synthesis language
     * */
     private Locale getUserSelectedLanguage(){
-        int checkedRadioId = this.mRadioGroup.getCheckedRadioButtonId();
+        int checkedRadioId = this.mRadioGroup_languages.getCheckedRadioButtonId();
         if (checkedRadioId == R.id.radio_en_us){
             return Locale.US;
         }else if(checkedRadioId == R.id.radio_en_uk){
@@ -209,6 +186,29 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         return null;
     }
 
+    private String getSelectedVoiceName(){
+        Locale selectedLanguage = this.getUserSelectedLanguage();
+        int checkedRadioId = this.mRadioGroup_voices.getCheckedRadioButtonId();
+
+        if(checkedRadioId == R.id.radio_voice_1){
+            return Objects.requireNonNull(voiceOptionsList.get(selectedLanguage)).get(0);
+        } else if (checkedRadioId == R.id.radio_voice_2){
+            return Objects.requireNonNull(voiceOptionsList.get(selectedLanguage)).get(1);
+        }
+        // return index 0 by default
+        return Objects.requireNonNull(voiceOptionsList.get(selectedLanguage)).get(0);
+    }
+
+    private void setTTSVoice(Locale selectedLanguage){
+        String voiceName = this.getSelectedVoiceName();
+        Voice voice = new Voice(voiceName,selectedLanguage,Voice.QUALITY_VERY_HIGH,
+                Voice.LATENCY_NORMAL, false, new HashSet<>());
+        Log.e("VOICE_NAME", "Selected Voice name: " + voiceName);
+        mTts.setVoice(voice);
+    }
+
+
+
     private void setTTSLanguage(){
         Locale selectedLanguage = this.getUserSelectedLanguage();
         int isLanguageAvailable = mTts.isLanguageAvailable(selectedLanguage);
@@ -219,21 +219,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     + " Using default locale instead...", Toast.LENGTH_SHORT).show();
 
             mTts.setLanguage(Locale.getDefault());
-            mTts.setVoice(new Voice("Default voice", Locale.getDefault(), Voice.QUALITY_VERY_HIGH,
+            mTts.setVoice(new Voice(mTts.getVoice().getName(), Locale.getDefault(), Voice.QUALITY_VERY_HIGH,
                     Voice.LATENCY_NORMAL, false, new HashSet<>()));
             mButtonSpeak.setEnabled(true);
 
         }else if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
+            String voiceName = this.getSelectedVoiceName();
+            Log.e("VOICE_NAME", "Default voice of the selected language: "+ voiceName);
+
             mTts.setLanguage(selectedLanguage);
-            mTts.setVoice(new Voice("Default voice", selectedLanguage, Voice.QUALITY_VERY_HIGH,
-                    Voice.LATENCY_NORMAL, false, new HashSet<>()));
+            this.setTTSVoice(selectedLanguage);
             mButtonSpeak.setEnabled(true);
         }
     }
 
-    private void selectVoice(){
-
-    }
 
     private void selectFont(){}
 
