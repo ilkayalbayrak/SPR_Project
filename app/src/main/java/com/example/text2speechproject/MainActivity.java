@@ -44,10 +44,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private Button mButtonRandom;
     private RadioGroup mRadioGroupLanguages;
     private RadioGroup mRadioGroupVoices;
-    private Spinner mSpinnerLanguages, mSpinnerVoices;
-    private AutoCompleteTextView mAutoCompleteLanguages, mDropdownVoices;
-    private RadioButton mRadio_fr;
-    private RadioButton mRadio_en;
+    private AutoCompleteTextView mAutoCompleteLanguages, mAutoCompleteVoices;
 
     private boolean isAppReady = false;
 
@@ -75,26 +72,25 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mSeekBarSpeed = findViewById(R.id.seek_bar_speed);
         mRadioGroupLanguages = findViewById(R.id.radioGroup_languages);
         mRadioGroupVoices = findViewById(R.id.radioGroup_voices);
-//        mSpinnerLanguages = findViewById(R.id.spinner_languages);
-//        mSpinnerVoices = findViewById(R.id.spinner_voices);
         mAutoCompleteLanguages = findViewById(R.id.autoComplete_languages);
-        mRadio_fr = findViewById(R.id.radio_fr);
-        mRadio_en = findViewById(R.id.radio_en_us);
         mButtonRandom.setOnClickListener(v -> {
             for (String info : returnMapForVoice(mTts.getVoice()).values()){
                 Log.e("VOICE_INFO", info);
             }
+        });
 
-            String [] languageList = getResources().getStringArray(R.array.array_languages);
+//            String [] languageList = getResources().getStringArray(R.array.array_languages);
             ArrayAdapter<CharSequence> adapterLanguage = ArrayAdapter.createFromResource(this,R.array.array_languages,R.layout.dropdown_item);
 //        ArrayAdapter<String> adapterLanguage = new ArrayAdapter<String>(this,R.layout.dropdown_item, languageList);
             mAutoCompleteLanguages.setAdapter(adapterLanguage);
             mAutoCompleteLanguages.setOnItemClickListener((parent, view, position, id) -> {
                 currentLanguage = parent.getItemAtPosition(position).toString();
                 Log.e("ITEM_SELECTION", "ITEM NAME: "+ currentLanguage);
+                setTTSLanguage();
+
             });
-        });
-        mRadioGroupLanguages.setOnCheckedChangeListener((group, checkedId) -> setTTSLanguage());
+
+//        mRadioGroupLanguages.setOnCheckedChangeListener((group, checkedId) -> setTTSLanguage());
         mRadioGroupVoices.setOnCheckedChangeListener((group, checkedId) -> setTTSVoice(this.getUserSelectedLanguageV2(currentLanguage)));
         mButtonSpeak.setOnClickListener(v -> speak());
 
@@ -253,24 +249,23 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     * Gets the locale selection from the radio buttons
     * then this selection is used for determining the synthesis language
     * */
-//    private Locale getUserSelectedLanguage(){
-//        int checkedRadioId = this.mRadioGroupLanguages.getCheckedRadioButtonId();
-//        if (checkedRadioId == R.id.radio_en_us){
-//            return Locale.US;
-//        }else if(checkedRadioId == R.id.radio_en_uk){
-//            return Locale.UK;
-//        }else if(checkedRadioId == R.id.radio_fr){
-//            return Locale.FRENCH;
-//        }else if(checkedRadioId == R.id.radio_it){
-//            return Locale.ITALIAN;
-//        }else if(checkedRadioId == R.id.radio_de) {
-//            return Locale.GERMAN;
-//        }
-//        return null;
-//    }
+    private Locale getUserSelectedLanguage(){
+        int checkedRadioId = this.mRadioGroupLanguages.getCheckedRadioButtonId();
+        if (checkedRadioId == R.id.radio_en_us){
+            return Locale.US;
+        }else if(checkedRadioId == R.id.radio_en_uk){
+            return Locale.UK;
+        }else if(checkedRadioId == R.id.radio_fr){
+            return Locale.FRENCH;
+        }else if(checkedRadioId == R.id.radio_it){
+            return Locale.ITALIAN;
+        }else if(checkedRadioId == R.id.radio_de) {
+            return Locale.GERMAN;
+        }
+        return null;
+    }
 
     private Locale getUserSelectedLanguageV2(String language){
-        if (language != null){
             switch (language) {
                 case "English-US":
                     return Locale.US;
@@ -286,10 +281,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     Log.e("LANG_SELECTION", "Selected language do not match with any of the predefined languages: NULL");
                     return null;
             }
-        }else {
-            return null;
-        }
-
     }
 
 
@@ -318,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void setTTSLanguage(){
         Locale selectedLanguage = this.getUserSelectedLanguageV2(currentLanguage);
-        int isLanguageAvailable = mTts.isLanguageAvailable(selectedLanguage);
+//        int isLanguageAvailable = mTts.isLanguageAvailable(selectedLanguage);
 
         // if the user did not selected any language, set the language and the voice to default
         if(selectedLanguage == null){
@@ -330,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     Voice.LATENCY_NORMAL, false, new HashSet<>()));
             mButtonSpeak.setEnabled(true);
 
-        }else if (isLanguageAvailable != TextToSpeech.LANG_MISSING_DATA && isLanguageAvailable != TextToSpeech.LANG_NOT_SUPPORTED){
+        }else if (mTts.isLanguageAvailable(selectedLanguage) != TextToSpeech.LANG_MISSING_DATA && mTts.isLanguageAvailable(selectedLanguage) != TextToSpeech.LANG_NOT_SUPPORTED){
             String voiceName = this.getSelectedVoiceName();
             Log.e("VOICE_NAME", "Default voice of the selected language: "+ voiceName);
 
