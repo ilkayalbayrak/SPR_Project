@@ -23,6 +23,34 @@
             android:inputType="textMultiLine"
             />
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dropdown_menu"
+            android:hint="Languages"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/label_coin"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/autoComplete_languages"
+                android:editable="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:inputType="none"
+                android:text="English"
+                android:drawableStart="@drawable/ic_language"
+                tools:ignore="Deprecated" />
+
+        </com.google.android.material.textfield.TextInputLayout>
         <RadioGroup
             android:id="@+id/radioGroup_languages"
             android:layout_width="match_parent"

@@ -11,4 +11,12 @@
     <string name="radio_de">German</string>
     <string name="radio_voice_1">Voice-1</string>
     <string name="radio_voice_2">Voice-2</string>
+
+    <string-array name="array_languages">
+        <item>English-US</item>
+        <item>English-UK</item>
+        <item>Italian</item>
+        <item>German</item>
+        <item>French</item>
+    </string-array>
 </resources>
