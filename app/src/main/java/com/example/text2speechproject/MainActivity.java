@@ -1,11 +1,16 @@
 package com.example.text2speechproject;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +22,7 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -26,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
 
@@ -43,12 +50,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private boolean isAppReady = false;
 
-    private HashMap<Locale, List<String>> voiceOptionsList = new HashMap<>();
-    private List<String> usVoices = new ArrayList<>();
-    private List<String> ukVoices = new ArrayList<>();
-    private List<String> frenchVoices = new ArrayList<>();
-    private List<String> italianVoices = new ArrayList<>();
-    private List<String> germanVoices = new ArrayList<>();
+    private final HashMap<Locale, List<String>> voiceOptionsList = new HashMap<>();
+    private final List<String> usVoices = new ArrayList<>();
+    private final List<String> ukVoices = new ArrayList<>();
+    private final List<String> frenchVoices = new ArrayList<>();
+    private final List<String> italianVoices = new ArrayList<>();
+    private final List<String> germanVoices = new ArrayList<>();
 
     private final int ttsInstalled = 0;
 
@@ -104,6 +111,40 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (status == TextToSpeech.SUCCESS) {
             printOutSupportedLanguages();
             setTTSLanguage();
+
+            mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) {
+
+
+                }
+
+                @Override
+                public void onDone(String utteranceId) {
+
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+
+                }
+
+                // this method requires min API 26, it could be used for functionalities
+                // such as highlighting the part of the text that is being synthesized
+                // However, this app is min API 23
+
+                @RequiresApi(Build.VERSION_CODES.O)
+                @Override
+                public void onRangeStart(String utteranceId, int start, int end, int frame) {
+                    super.onRangeStart(utteranceId, start, end, frame);
+                    Log.i("Current_Synth_Progress", "onRangeStart > utteranceId: " + utteranceId + ", start: " + start
+                            + ", end: " + end + ", frame: " + frame);
+
+
+
+
+                }
+            });
         } else if (status == TextToSpeech.ERROR){
             Log.e("TTS", "Initialization failed");
             Toast.makeText(this,"Unfortunately, TTS engine initialization failed...", Toast.LENGTH_SHORT).show();
@@ -242,9 +283,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         startActivityForResult(checkTTSIntent, ttsInstalled);
     }
 
+
+
     private void speak() {
         // get the text input to be synthesised from the editText
         String text = mEditText.getText().toString();
+
 
         // add a seekbar to manipulate the pitch of the synthesis
         float pitch = (float) mSeekBarPitch.getProgress() / 50;
@@ -256,9 +300,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mTts.setPitch(pitch);
         mTts.setSpeechRate(speed);
 
+        //
+        Bundle dataMap = new Bundle();
+        dataMap.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, 0f);
+        dataMap.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1f);
+        dataMap.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_VOICE_CALL);
+
         // QUEUE_FLUSH option  replaces an already playing synthesis with the new entry
         // if the user calls the speak
-        mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+
+        mTts.speak(text, TextToSpeech.QUEUE_FLUSH, dataMap, UUID.randomUUID().toString());
     }
 
     @Override
