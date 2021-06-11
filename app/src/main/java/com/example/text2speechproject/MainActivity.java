@@ -1,19 +1,29 @@
 package com.example.text2speechproject;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -39,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private Button mButtonSpeak;
     private Button mButtonRandom;
     private AutoCompleteTextView mAutoCompleteLanguages, mAutoCompleteVoices;
+    private TextView mHighlightedTextDisplay;
 
     private boolean isAppReady = false;
 
@@ -66,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mEditText = findViewById(R.id.input_text);
         mSeekBarPitch = findViewById(R.id.seek_bar_pitch);
         mSeekBarSpeed = findViewById(R.id.seek_bar_speed);
+        mHighlightedTextDisplay = findViewById(R.id.textView_highlight);
 //        mRadioGroupLanguages = findViewById(R.id.radioGroup_languages);
 //        mRadioGroupVoices = findViewById(R.id.radioGroup_voices);
         mAutoCompleteLanguages = findViewById(R.id.autoComplete_languages);
@@ -95,9 +107,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         });
 
 
-
-//        mRadioGroupLanguages.setOnCheckedChangeListener((group, checkedId) -> setTTSLanguage());
-//        mRadioGroupVoices.setOnCheckedChangeListener((group, checkedId) -> setTTSVoice(this.getUserSelectedLanguage(currentLanguage)));
+        mHighlightedTextDisplay.setText(mEditText.getText().toString());
         mButtonSpeak.setOnClickListener(v -> speak());
 
 
@@ -132,20 +142,29 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             printOutSupportedLanguages();
             setTTSLanguage();
 
+
             mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                 @Override
                 public void onStart(String utteranceId) {
-
+                    runOnUiThread(()-> mHighlightedTextDisplay.setVisibility(View.VISIBLE));
 
                 }
 
                 @Override
                 public void onDone(String utteranceId) {
+                    mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
 
                 }
 
                 @Override
                 public void onError(String utteranceId) {
+                    Log.e("UTTERANCE_ERROR", "An Error occurred while synthesizing the given text...");
+                    Context context = getApplicationContext();
+                    Toast toast = Toast.makeText(context,
+                            "An Error occurred while synthesizing the given text...",
+                            Toast.LENGTH_SHORT);
+                    toast.show();
+                    mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
 
                 }
 
@@ -157,10 +176,21 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 @Override
                 public void onRangeStart(String utteranceId, int start, int end, int frame) {
                     super.onRangeStart(utteranceId, start, end, frame);
+
                     Log.i("Current_Synth_Progress", "onRangeStart > utteranceId: " + utteranceId + ", start: " + start
                             + ", end: " + end + ", frame: " + frame);
 
+                    runOnUiThread(()->{
+                        Spannable textWithHighlights = new SpannableString(mEditText.getText());
 
+                        textWithHighlights.setSpan(new ForegroundColorSpan(Color.BLACK),
+                                start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                        textWithHighlights.setSpan(new BackgroundColorSpan(Color.YELLOW),
+                                start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+                        mHighlightedTextDisplay.setText(textWithHighlights);
+
+                    });
 
 
                 }
@@ -211,7 +241,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         return voiceData;
     }
-
 
     private void printOutSupportedLanguages(){
         // Supported languages
