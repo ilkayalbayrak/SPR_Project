@@ -11,6 +11,11 @@
     <string name="radio_de">German</string>
     <string name="radio_voice_1">Voice-1</string>
     <string name="radio_voice_2">Voice-2</string>
+    <string name="dropdown_language_text">Select Language</string>
+    <string name="dropdown_language_hint">Languages</string>
+    <string name="dropdown_voice_text">Select Voice</string>
+    <string name="dropdown_voice_hint">Voices</string>
+
 
     <string-array name="array_languages">
         <item>English-US</item>
@@ -18,5 +23,10 @@
         <item>Italian</item>
         <item>German</item>
         <item>French</item>
+    </string-array>
+
+    <string-array name="array_voices">
+        <item>Voice_1</item>
+        <item>Voice_2</item>
     </string-array>
 </resources>

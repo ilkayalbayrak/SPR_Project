@@ -19,17 +19,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/input_text"
+            android:layout_marginTop="40dp"
             android:layout_marginBottom="16dp"
             android:inputType="textMultiLine"
             />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/dropdown_menu"
-            android:hint="Languages"
+            android:id="@+id/text_input_layout_languages"
+            android:hint="@string/dropdown_language_hint"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -46,71 +48,41 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
                 android:inputType="none"
-                android:text="English"
+                android:text="@string/dropdown_language_text"
                 android:drawableStart="@drawable/ic_language"
                 tools:ignore="Deprecated" />
 
         </com.google.android.material.textfield.TextInputLayout>
-        <RadioGroup
-            android:id="@+id/radioGroup_languages"
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_layout_voices"
+            android:hint="@string/dropdown_voice_hint"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/label_coin"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <RadioButton
-                android:checked="true"
-                android:id="@+id/radio_en_us"
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/autoComplete_voices"
+                android:editable="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/radio_en_us" />
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:inputType="none"
+                android:text="@string/dropdown_voice_text"
+                android:drawableStart="@drawable/ic_language"
+                tools:ignore="Deprecated" />
 
-            <RadioButton
-                android:checked="true"
-                android:id="@+id/radio_en_uk"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/radio_en_uk" />
-
-            <RadioButton
-                android:id="@+id/radio_fr"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/radio_fr" />
-
-            <RadioButton
-                android:id="@+id/radio_it"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/radio_it" />
-
-            <RadioButton
-                android:id="@+id/radio_de"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/radio_de" />
-
-        </RadioGroup>
-
-        <RadioGroup
-            android:id="@+id/radioGroup_voices"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RadioButton
-                android:id="@+id/radio_voice_1"
-                android:checked="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/radio_voice_1" />
-
-            <RadioButton
-                android:id="@+id/radio_voice_2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/radio_voice_2" />
-
-
-        </RadioGroup>
-
+        </com.google.android.material.textfield.TextInputLayout>
 
 
         <TextView
@@ -144,6 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_speak"
+            android:drawableLeft="@drawable/ic_speak"
             android:layout_gravity="center_horizontal"
             android:enabled="false"/>
 
