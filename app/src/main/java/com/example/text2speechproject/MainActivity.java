@@ -390,7 +390,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @SuppressLint("ResourceType")
     private void readTextFromFile(){
-        ReadOutFromFileFragment readOutFromFileFragment = new ReadOutFromFileFragment();
+        ReadOutFromFileFragment readOutFromFileFragment = new ReadOutFromFileFragment(this.mTts);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager()
                 .beginTransaction();
 

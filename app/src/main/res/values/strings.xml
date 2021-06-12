@@ -15,6 +15,7 @@
     <string name="dropdown_language_hint">Languages</string>
     <string name="dropdown_voice_text">Select Voice</string>
     <string name="dropdown_voice_hint">Voices</string>
+    <string name="action_settings">Settings</string>
 
 
     <string-array name="array_languages">
