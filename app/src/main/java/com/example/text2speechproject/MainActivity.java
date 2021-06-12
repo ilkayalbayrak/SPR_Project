@@ -1,6 +1,6 @@
 package com.example.text2speechproject;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -21,13 +21,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +42,7 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
 
 //    private HashMap<String,String> TtsInfo;
+    private static final String TTS_SERIALIZATION_KEY = "tts_serialization_key";
     private TextToSpeech mTts;
     private EditText mEditText;
     private SeekBar mSeekBarPitch;
@@ -82,11 +83,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 //        mRadioGroupVoices = findViewById(R.id.radioGroup_voices);
         mAutoCompleteLanguages = findViewById(R.id.autoComplete_languages);
         mAutoCompleteVoices = findViewById(R.id.autoComplete_voices);
-        mButtonRandom.setOnClickListener(v -> {
-            for (String info : returnMapForVoice(mTts.getVoice()).values()){
-                Log.e("VOICE_INFO", info);
-            }
-        });
+
 
         
             ArrayAdapter<CharSequence> adapterLanguage = ArrayAdapter.createFromResource(this,R.array.array_languages,R.layout.dropdown_item);
@@ -109,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         mHighlightedTextDisplay.setText(mEditText.getText().toString());
         mButtonSpeak.setOnClickListener(v -> speak());
+        mButtonRandom.setOnClickListener(v -> {
+            Log.e("TESTING_Fragment","fragment button clicked");
+            readTextFromFile();
+        });
 
 
 
@@ -153,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 @Override
                 public void onDone(String utteranceId) {
                     mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
+                    mHighlightedTextDisplay.setText("");
 
                 }
 
@@ -386,16 +388,24 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mTts.speak(text, TextToSpeech.QUEUE_FLUSH, dataMap, UUID.randomUUID().toString());
     }
 
+    @SuppressLint("ResourceType")
+    private void readTextFromFile(){
+        ReadOutFromFileFragment readOutFromFileFragment = new ReadOutFromFileFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                .beginTransaction();
+
+        Bundle data = new Bundle();
+//        data.putSerializable(TTS_SERIALIZATION_KEY, (Serializable) mTts);
+        data.putString(TTS_SERIALIZATION_KEY,"hello love");
+        readOutFromFileFragment.setArguments(data);
+
+        fragmentTransaction.replace(R.id.main_activity_layout_container, readOutFromFileFragment).commit();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-        // todo: do the checks such as isLanguageAvailable... and many others in onStart method
-        // this method will be called after the onCreate method
 
-        // todo; get available languages
-//        Set<Locale> availableLanguages = TextToSpeech.;
-
-//        assert availableLanguages != null;
     }
 
     @Override
