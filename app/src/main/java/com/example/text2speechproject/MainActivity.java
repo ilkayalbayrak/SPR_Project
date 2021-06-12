@@ -399,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         data.putString(TTS_SERIALIZATION_KEY,"hello love");
         readOutFromFileFragment.setArguments(data);
 
-        fragmentTransaction.replace(R.id.main_activity_layout_container, readOutFromFileFragment).commit();
+        fragmentTransaction.add(android.R.id.content, readOutFromFileFragment).commit();
     }
 
     @Override
