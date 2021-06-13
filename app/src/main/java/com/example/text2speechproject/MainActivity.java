@@ -1,5 +1,6 @@
 package com.example.text2speechproject;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -69,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private String currentLanguage;
     private String currentVoice;
 
+    private PermissionsUtil permissionsUtil;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 //        mRadioGroupVoices = findViewById(R.id.radioGroup_voices);
         mAutoCompleteLanguages = findViewById(R.id.autoComplete_languages);
         mAutoCompleteVoices = findViewById(R.id.autoComplete_voices);
+
+        checkPermissions();
 
 
         
@@ -265,13 +271,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (availableVoices != null){
             for (Voice voice : availableVoices){
                 if (!voice.isNetworkConnectionRequired() &&  !voice.getFeatures().contains("notInstalled")){
-//                if (!voice.isNetworkConnectionRequired() && mTts.getVoice().getLocale().toString().equals(voice.getLocale().toString())){
-//                    Log.e("TTS","Available Voice: " + voice);
                     Log.e("TTS", "Current Locale: " + voice);
-//                Locale.US.get
-//                }else {
-//                    Log.e("TTS", "Current Locale: NULLLLLLLLLLLLLLL");
-
                 }
             }
         }
@@ -365,15 +365,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         startActivityForResult(checkTTSIntent, ttsInstalled);
     }
 
-
-
-
-
-    public void speakInputText() {
-        // get the text input to be synthesised from the editText
-        String text = mEditText.getText().toString();
-
-
+    private void setPitchAndSpeed(){
         // add a seekbar to manipulate the pitch of the synthesis
         float pitch = (float) mSeekBarPitch.getProgress() / 50;
         if (pitch < 0.1) pitch = 0.1f;
@@ -383,6 +375,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (speed < 0.1) speed = 0.1f;
         mTts.setPitch(pitch);
         mTts.setSpeechRate(speed);
+    }
+
+
+    private void speakInputText() {
+        // get the text input to be synthesised from the editText
+        String text = mEditText.getText().toString();
 
         //
         Bundle dataMap = new Bundle();
@@ -390,9 +388,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         dataMap.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1f);
         dataMap.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_VOICE_CALL);
 
+        setPitchAndSpeed();
+
         // QUEUE_FLUSH option  replaces an already playing synthesis with the new entry
         // if the user calls the speak
-
         mTts.speak(text, TextToSpeech.QUEUE_FLUSH, dataMap, UUID.randomUUID().toString());
     }
 
@@ -401,13 +400,28 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         ReadOutFromFileFragment readOutFromFileFragment = new ReadOutFromFileFragment(this.mTts);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager()
                 .beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction
+                .TRANSIT_FRAGMENT_OPEN);
 
         Bundle data = new Bundle();
-//        data.putSerializable(TTS_SERIALIZATION_KEY, (Serializable) mTts);
-        data.putString(TTS_SERIALIZATION_KEY,"hello love");
         readOutFromFileFragment.setArguments(data);
 
         fragmentTransaction.add(android.R.id.content, readOutFromFileFragment).commit();
+    }
+
+    private void checkPermissions() {
+        permissionsUtil = new PermissionsUtil();
+        permissionsUtil.checkAndRequestPermissions(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (permissionsUtil != null){
+            permissionsUtil.onRequestPermissionsResult(this,requestCode, permissions, grantResults);
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

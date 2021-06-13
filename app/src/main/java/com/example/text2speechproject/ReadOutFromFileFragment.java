@@ -51,11 +51,7 @@ import br.com.onimur.handlepathoz.model.PathOz;
 
 public class ReadOutFromFileFragment extends Fragment implements HandlePathOzListener.SingleUri{
 
-    private final String TTS_SERIALIZATION_KEY = "tts_serialization_key";
-    private static final String PRIMARY = "primary";
     private static final int READ_REQUEST_CODE = 42;
-    private static final int PICK_PDF_FILE = 2;
-    private static final String COLON = ":";
 
     private HandlePathOz handlePathOz;
     private TextToSpeech mTts;
@@ -74,11 +70,6 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-            // Get initialized TTS object from the main activity
-            String someData =  getArguments().getString(TTS_SERIALIZATION_KEY);
-        }
     }
 
     @Override
@@ -143,12 +134,6 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
             }
         });
 
-        // TODO: check if permission is already given
-        // Request permissions to access the storage
-        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE}, PackageManager.PERMISSION_GRANTED);
-
-
         mButtonUploadPDF.setOnClickListener(v -> {
             Intent openDocumentIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             openDocumentIntent.setType("*/*");
@@ -170,8 +155,8 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
             super.onActivityResult(requestCode, resultCode, data);
             if(data != null) {
                 Uri uri = data.getData();
-                // This starts the request handler of the file picker
-                // HandlePathOZ
+
+                // This starts the request handler of the file picker HandlePathOZ
                 handlePathOz.getRealPath(uri);
 
             }
@@ -202,20 +187,22 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
 
         tts.speak(fileTextContent, TextToSpeech.QUEUE_FLUSH, dataMap, UUID.randomUUID().toString());
     }
+
+
     // Request code for selecting a PDF document.
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void openFile(Uri pickerInitialUri) {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/pdf");
-
-        // Optionally, specify a URI for the file that should appear in the
-        // system file picker when it loads.
-        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
-
-        requireActivity().startActivityForResult(intent, PICK_PDF_FILE);
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    private void openFile(Uri pickerInitialUri) {
+//        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+//        intent.addCategory(Intent.CATEGORY_OPENABLE);
+//        intent.setType("application/pdf");
+//
+//        // Optionally, specify a URI for the file that should appear in the
+//        // system file picker when it loads.
+//        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
+//
+//        requireActivity().startActivityForResult(intent, PICK_PDF_FILE);
+//    }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -244,8 +231,33 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        if (mTts != null
+                && mTts.isSpeaking()) {
+            mTts.stop();
+        }
+        super.onStop();
+    }
+
+    @Override
     public void onDestroy() {
         handlePathOz.onDestroy();
+        if (mTts != null
+                && mTts.isSpeaking()) {
+            mTts.shutdown();
+        }
         super.onDestroy();
     }
+
+
 }

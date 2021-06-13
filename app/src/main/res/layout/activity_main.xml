@@ -31,24 +31,38 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.28">
 
+
             <EditText
                 android:id="@+id/input_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
+                android:padding="6dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/white"
                 android:hint="@string/input_text"
-                android:inputType="textMultiLine" />
-            <TextView
+                android:inputType="textMultiLine"/>
+
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textView_highlight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#f0f5f5"
-                android:hint="Highlight"
+                android:hint="@string/textView_highlight_main"
                 android:padding="8dp"
                 android:textAlignment="center"
                 android:textStyle="italic"
-                android:visibility="invisible" />
+                android:visibility="invisible">
+
+            </com.google.android.material.textview.MaterialTextView>
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="#f0f5f5"-->
+<!--                android:hint="Highlight"-->
+<!--                android:padding="8dp"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textStyle="italic"-->
+<!--                android:visibility="invisible" />-->
 
 
             <com.google.android.material.textfield.TextInputLayout
@@ -68,6 +82,8 @@
                     android:background="@color/white"
                     android:layout_marginTop="112dp"
                     android:drawableStart="@drawable/ic_language"
+                    android:drawablePadding="5dp"
+
                     android:editable="false"
                     android:inputType="none"
                     android:paddingTop="16dp"
@@ -97,7 +113,8 @@
                     android:layout_height="wrap_content"
                     android:background="@color/white"
                     android:layout_marginTop="28dp"
-                    android:drawableStart="@drawable/ic_language"
+                    android:drawableStart="@drawable/ic_people"
+                    android:drawablePadding="5dp"
                     android:editable="false"
                     android:inputType="none"
                     android:paddingTop="16dp"
@@ -137,6 +154,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:drawableEnd="@drawable/ic_arrow_right"
+                android:drawableTint="@color/white"
                 android:text="@string/button_start_read_from_file" />
 
         </LinearLayout>
@@ -158,7 +177,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/speed"
+                android:text="@string/pitch"
                 android:textSize="16sp" />
 
             <SeekBar
@@ -172,7 +191,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="@string/pitch"
+                android:text="@string/speed"
                 android:textSize="16sp" />
 
             <SeekBar

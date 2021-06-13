@@ -70,16 +70,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Upload PDF to listen" />
+                android:text="@string/button_find_pdf" />
 
             <Button
                 android:id="@+id/button_read_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/play_green"
                 android:layout_gravity="center"
                 android:layout_marginBottom="16dp"
-
-                android:text="Start Reading"
+                android:drawableLeft="@drawable/ic_play_arrow"
+                android:drawablePadding="6dp"
+                android:text="@string/button_read_text_of_file"
                 android:visibility="invisible" />
 
 

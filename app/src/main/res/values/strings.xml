@@ -34,4 +34,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="button_start_read_from_file">Read Out From File</string>
     <string name="textView_fragment_readOut_info">Please choose a PDF file to be read out loud !</string>
+    <string name="textView_highlight_main">Highlighted Text</string>
+    <string name="button_find_pdf">Find PDF File!!</string>
+    <string name="button_read_text_of_file">Start Reading Out Loud</string>
+    <string name="permission_required">Required Permissions</string>
 </resources>
