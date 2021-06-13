@@ -48,11 +48,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private SeekBar mSeekBarPitch;
     private SeekBar mSeekBarSpeed;
     private Button mButtonSpeak;
-    private Button mButtonRandom;
+    private Button mButtonStartReadFromFile;
     private AutoCompleteTextView mAutoCompleteLanguages, mAutoCompleteVoices;
     private TextView mHighlightedTextDisplay;
 
     private boolean isAppReady = false;
+    private String textInputToSpeak;
 
     private final HashMap<Locale, List<String>> voiceOptionsList = new HashMap<>();
     private final List<String> usVoices = new ArrayList<>();
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         setContentView(R.layout.activity_main);
 
         mButtonSpeak = findViewById(R.id.button_speak);
-        mButtonRandom = findViewById(R.id.button_random_test);
+        mButtonStartReadFromFile = findViewById(R.id.button_start_read_from_file);
         mEditText = findViewById(R.id.input_text);
         mSeekBarPitch = findViewById(R.id.seek_bar_pitch);
         mSeekBarSpeed = findViewById(R.id.seek_bar_speed);
@@ -104,9 +105,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         });
 
 
+        textInputToSpeak = mEditText.getText().toString();
         mHighlightedTextDisplay.setText(mEditText.getText().toString());
         mButtonSpeak.setOnClickListener(v -> speakInputText());
-        mButtonRandom.setOnClickListener(v -> {
+        mButtonStartReadFromFile.setOnClickListener(v -> {
             Log.e("TESTING_Fragment","fragment button clicked");
             readTextFromFile();
         });
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     runOnUiThread(()->{
                         mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
                         mHighlightedTextDisplay.setText("");
+
                     });
 
 

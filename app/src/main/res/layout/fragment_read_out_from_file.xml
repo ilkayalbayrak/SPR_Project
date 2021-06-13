@@ -1,58 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/general_background_color"
     android:id="@+id/fragment_read_out_from_file_container"
     tools:context=".ReadOutFromFileFragment"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    >
 
     <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ScrollView
+        <LinearLayout
+            android:id="@+id/fragment_linearLayout_1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="15dp"
+                android:background="@color/white"
+                android:text="@string/textView_fragment_readOut_info"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                android:textStyle="italic|bold" />
+
             <TextView
                 android:id="@+id/textView_fragment_display"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="15dp"
                 android:textAlignment="center"
                 android:textSize="20sp"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginTop="60dp"
-                android:visibility="invisible"
-                />
-        </ScrollView>
+                android:visibility="invisible" />
+        </LinearLayout>
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/fragment_linearLayout_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="10dp"
-            android:text="I shouldn't have drank that last one, I can hear the PDF!!" />
+            android:layout_marginTop="36dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fragment_linearLayout_1"
+            app:layout_constraintVertical_bias="0.0">
 
-        <Button
-            android:id="@+id/button_upload_pdf"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Upload PDF to listen"/>
-        <Button
-            android:id="@+id/button_read_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="invisible"
-            android:text="Start Reading"/>
+            <Button
+                android:id="@+id/button_upload_pdf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Upload PDF to listen" />
+
+            <Button
+                android:id="@+id/button_read_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+
+                android:text="Start Reading"
+                android:visibility="invisible" />
+
 
         </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
