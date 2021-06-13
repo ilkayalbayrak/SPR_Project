@@ -14,21 +14,45 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/textView_fragment_display"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="60dp"
+                android:visibility="invisible"
+                />
+        </ScrollView>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="10dp"
             android:text="I shouldn't have drank that last one, I can hear the PDF!!" />
+
         <Button
             android:id="@+id/button_upload_pdf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Upload PDF to listen"/>
+        <Button
+            android:id="@+id/button_read_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            android:text="Start Reading"/>
 
         </LinearLayout>
 </ScrollView>

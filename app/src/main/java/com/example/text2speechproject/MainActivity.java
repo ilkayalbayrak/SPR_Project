@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
         mHighlightedTextDisplay.setText(mEditText.getText().toString());
-        mButtonSpeak.setOnClickListener(v -> speak());
+        mButtonSpeak.setOnClickListener(v -> speakInputText());
         mButtonRandom.setOnClickListener(v -> {
             Log.e("TESTING_Fragment","fragment button clicked");
             readTextFromFile();
@@ -153,8 +153,11 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                 @Override
                 public void onDone(String utteranceId) {
-                    mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
-                    mHighlightedTextDisplay.setText("");
+                    runOnUiThread(()->{
+                        mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
+                        mHighlightedTextDisplay.setText("");
+                    });
+
 
                 }
 
@@ -361,7 +364,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
 
-    private void speak() {
+
+
+    public void speakInputText() {
         // get the text input to be synthesised from the editText
         String text = mEditText.getText().toString();
 
