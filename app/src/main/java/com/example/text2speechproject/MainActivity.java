@@ -43,7 +43,6 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
 
-    private static final String TTS_SERIALIZATION_KEY = "tts_serialization_key";
     private static final String READ_OUT_FROM_FILE_FRAGMENT = "read_out_from_file_fragment";
 
     private TextToSpeech mTts;
@@ -85,15 +84,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mSeekBarPitch = findViewById(R.id.seek_bar_pitch);
         mSeekBarSpeed = findViewById(R.id.seek_bar_speed);
         mHighlightedTextDisplay = findViewById(R.id.textView_highlight);
-//        mRadioGroupLanguages = findViewById(R.id.radioGroup_languages);
-//        mRadioGroupVoices = findViewById(R.id.radioGroup_voices);
         mAutoCompleteLanguages = findViewById(R.id.autoComplete_languages);
         mAutoCompleteVoices = findViewById(R.id.autoComplete_voices);
 
         checkPermissions();
 
 
-        
             ArrayAdapter<CharSequence> adapterLanguage = ArrayAdapter.createFromResource(this,R.array.array_languages,R.layout.dropdown_item);
             mAutoCompleteLanguages.setAdapter(adapterLanguage);
             mAutoCompleteLanguages.setOnItemClickListener((parent, view, position, id) -> {
@@ -399,7 +395,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
             // this method requires min API 26, it could be used for functionalities
             // such as highlighting the part of the text that is being synthesized
-            // However, this app is min API 23
 
             @RequiresApi(Build.VERSION_CODES.O)
             @Override
