@@ -52,6 +52,7 @@ import br.com.onimur.handlepathoz.model.PathOz;
 public class ReadOutFromFileFragment extends Fragment implements HandlePathOzListener.SingleUri{
 
     private static final int READ_REQUEST_CODE = 42;
+    private static final String FRAGMENT_GENERAL_UTTERANCE_ID = "fragment_general_utterance_id";
 
     private HandlePathOz handlePathOz;
     private TextToSpeech mTts;
@@ -59,6 +60,7 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
     private Button mButtonReadText;
     private String fileTextContent;
     private TextView mHighlightedTextView;
+    private TextView mFragmentWallpaperTextView;
 
 
 
@@ -81,58 +83,10 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
         mButtonUploadPDF = view.findViewById(R.id.button_upload_pdf);
         mButtonReadText = view.findViewById(R.id.button_read_text);
         mHighlightedTextView = view.findViewById(R.id.textView_fragment_display);
+        mFragmentWallpaperTextView = view.findViewById(R.id.textView_fragment_wallpaper);
 
         // initialize the file picker
         handlePathOz = new HandlePathOz(requireActivity(),this);
-
-        // Start the utterance listener in fragment
-        mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-            @Override
-            public void onStart(String utteranceId) {
-                requireActivity().runOnUiThread(()->mHighlightedTextView.setVisibility(View.VISIBLE));
-            }
-
-            @Override
-            public void onDone(String utteranceId) {
-                requireActivity().runOnUiThread(()->{
-                    mHighlightedTextView.setVisibility(View.INVISIBLE);
-                    mHighlightedTextView.setText("");
-                });
-
-            }
-
-            @Override
-            public void onError(String utteranceId) {
-                Log.e("UTTERANCE_ERROR", "An Error occurred while synthesizing the given text...");
-                Activity activity = requireActivity();
-                Toast toast = Toast.makeText(activity,
-                        "An Error occurred while synthesizing the given text...",
-                        Toast.LENGTH_SHORT);
-                toast.show();
-                mHighlightedTextView.setVisibility(View.INVISIBLE);
-
-            }
-
-            @RequiresApi(Build.VERSION_CODES.O)
-            @Override
-            public void onRangeStart(String utteranceId, int start, int end, int frame) {
-                super.onRangeStart(utteranceId, start, end, frame);
-                Log.i("Current_Synth_Progress", "onRangeStart > utteranceId: " + utteranceId + ", start: " + start
-                        + ", end: " + end + ", frame: " + frame);
-
-                requireActivity().runOnUiThread(()->{
-                    Spannable textWithHighlights = new SpannableString(fileTextContent);
-
-                    textWithHighlights.setSpan(new ForegroundColorSpan(Color.BLACK),
-                            start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                    textWithHighlights.setSpan(new BackgroundColorSpan(Color.YELLOW),
-                            start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-                    mHighlightedTextView.setText(textWithHighlights);
-                });
-
-            }
-        });
 
         mButtonUploadPDF.setOnClickListener(v -> {
             Intent openDocumentIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -141,8 +95,10 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
         });
 
         mButtonReadText.setOnClickListener(v->{
+            utteranceListenerStarter();
             speakExtractedText(mTts, fileTextContent);
         });
+//        mTts.
 
 
         return view;
@@ -185,7 +141,81 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
         dataMap.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1f);
         dataMap.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_VOICE_CALL);
 
-        tts.speak(fileTextContent, TextToSpeech.QUEUE_FLUSH, dataMap, UUID.randomUUID().toString());
+
+        tts.speak(fileTextContent, TextToSpeech.QUEUE_FLUSH, dataMap, FRAGMENT_GENERAL_UTTERANCE_ID);
+    }
+
+    private void utteranceListenerStarter(){
+
+        // Start the utterance listener in fragment
+        mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+
+            @Override
+            public void onStart(String utteranceId) {
+                if (utteranceId.equals(FRAGMENT_GENERAL_UTTERANCE_ID)){
+                    requireActivity().runOnUiThread(()->{
+                        mHighlightedTextView.setVisibility(View.VISIBLE);
+                        mFragmentWallpaperTextView.setVisibility(View.INVISIBLE);
+                    });
+
+                }
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+                if (utteranceId.equals(FRAGMENT_GENERAL_UTTERANCE_ID)){
+                    requireActivity().runOnUiThread(()->{
+                        mHighlightedTextView.setVisibility(View.INVISIBLE);
+                        mHighlightedTextView.setText("");
+                        mFragmentWallpaperTextView.setVisibility(View.VISIBLE);
+
+                    });
+                }
+
+
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
+                if (utteranceId.equals(FRAGMENT_GENERAL_UTTERANCE_ID)){
+                    requireActivity().runOnUiThread(()->{
+                        Log.e("UTTERANCE_ERROR", "An Error occurred while synthesizing the given text...");
+                        Activity activity = requireActivity();
+                        Toast toast = Toast.makeText(activity,
+                                "An Error occurred while synthesizing the given text...",
+                                Toast.LENGTH_SHORT);
+                        toast.show();
+                        mHighlightedTextView.setVisibility(View.INVISIBLE);
+                        mHighlightedTextView.setText("");
+                        mFragmentWallpaperTextView.setVisibility(View.VISIBLE);
+
+                    });
+                }
+
+            }
+
+            @RequiresApi(Build.VERSION_CODES.O)
+            @Override
+            public void onRangeStart(String utteranceId, int start, int end, int frame) {
+                super.onRangeStart(utteranceId, start, end, frame);
+                if (utteranceId.equals(FRAGMENT_GENERAL_UTTERANCE_ID)){
+                    Log.i("Current_Synth_Progress", "onRangeStart > utteranceId: " + utteranceId + ", start: " + start
+                            + ", end: " + end + ", frame: " + frame);
+
+                    requireActivity().runOnUiThread(()->{
+                        Spannable textWithHighlights = new SpannableString(fileTextContent);
+
+                        textWithHighlights.setSpan(new ForegroundColorSpan(Color.BLACK),
+                                start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                        textWithHighlights.setSpan(new BackgroundColorSpan(Color.YELLOW),
+                                start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+                        mHighlightedTextView.setText(textWithHighlights);
+                    });
+                }
+            }
+        });
     }
 
 
@@ -225,6 +255,7 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
         readPdfFile(pathOz.getPath());
         mButtonReadText.setVisibility(View.VISIBLE);
         mHighlightedTextView.setVisibility(View.VISIBLE);
+        mFragmentWallpaperTextView.setVisibility(View.INVISIBLE);
         mHighlightedTextView.setText(fileTextContent);
         Toast.makeText(getActivity(), "File Uploaded Successfully !", Toast.LENGTH_SHORT).show();
         Log.e("URI", "The URI path: "+pathOz.getPath());
@@ -237,6 +268,10 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
 
     @Override
     public void onPause() {
+        if (mTts != null
+                && mTts.isSpeaking()) {
+            mTts.stop();
+        }
         super.onPause();
     }
 

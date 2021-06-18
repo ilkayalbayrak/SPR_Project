@@ -43,8 +43,9 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
 
-//    private HashMap<String,String> TtsInfo;
     private static final String TTS_SERIALIZATION_KEY = "tts_serialization_key";
+    private static final String READ_OUT_FROM_FILE_FRAGMENT = "read_out_from_file_fragment";
+
     private TextToSpeech mTts;
     private EditText mEditText;
     private SeekBar mSeekBarPitch;
@@ -116,8 +117,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mButtonSpeak.setOnClickListener(v -> speakInputText());
         mButtonStartReadFromFile.setOnClickListener(v -> {
             Log.e("TESTING_Fragment","fragment button clicked");
+            mTts.stop();
+            mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
+            mEditText.setText("");
             readTextFromFile();
         });
+
+        mEditText.setHint(getString(R.string.input_text));
 
 
 
@@ -152,63 +158,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             setTTSLanguage();
 
 
-            mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                @Override
-                public void onStart(String utteranceId) {
-                    runOnUiThread(()-> mHighlightedTextDisplay.setVisibility(View.VISIBLE));
-
-                }
-
-                @Override
-                public void onDone(String utteranceId) {
-                    runOnUiThread(()->{
-                        mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
-                        mHighlightedTextDisplay.setText("");
-
-                    });
-
-
-                }
-
-                @Override
-                public void onError(String utteranceId) {
-                    Log.e("UTTERANCE_ERROR", "An Error occurred while synthesizing the given text...");
-                    Context context = getApplicationContext();
-                    Toast toast = Toast.makeText(context,
-                            "An Error occurred while synthesizing the given text...",
-                            Toast.LENGTH_SHORT);
-                    toast.show();
-                    mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
-
-                }
-
-                // this method requires min API 26, it could be used for functionalities
-                // such as highlighting the part of the text that is being synthesized
-                // However, this app is min API 23
-
-                @RequiresApi(Build.VERSION_CODES.O)
-                @Override
-                public void onRangeStart(String utteranceId, int start, int end, int frame) {
-                    super.onRangeStart(utteranceId, start, end, frame);
-
-                    Log.i("Current_Synth_Progress", "onRangeStart > utteranceId: " + utteranceId + ", start: " + start
-                            + ", end: " + end + ", frame: " + frame);
-
-                    runOnUiThread(()->{
-                        Spannable textWithHighlights = new SpannableString(mEditText.getText());
-
-                        textWithHighlights.setSpan(new ForegroundColorSpan(Color.BLACK),
-                                start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                        textWithHighlights.setSpan(new BackgroundColorSpan(Color.YELLOW),
-                                start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-                        mHighlightedTextDisplay.setText(textWithHighlights);
-
-                    });
-
-
-                }
-            });
         } else if (status == TextToSpeech.ERROR){
             Log.e("TTS", "Initialization failed");
             Toast.makeText(this,"Unfortunately, TTS engine initialization failed...", Toast.LENGTH_SHORT).show();
@@ -389,6 +338,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         dataMap.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_VOICE_CALL);
 
         setPitchAndSpeed();
+        utteranceListenerStarter();
 
         // QUEUE_FLUSH option  replaces an already playing synthesis with the new entry
         // if the user calls the speak
@@ -406,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Bundle data = new Bundle();
         readOutFromFileFragment.setArguments(data);
 
-        fragmentTransaction.add(android.R.id.content, readOutFromFileFragment).commit();
+        fragmentTransaction.add(android.R.id.content, readOutFromFileFragment).addToBackStack(READ_OUT_FROM_FILE_FRAGMENT).commit();
     }
 
     private void checkPermissions() {
@@ -414,6 +364,66 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         permissionsUtil.checkAndRequestPermissions(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private void utteranceListenerStarter(){
+        mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+                runOnUiThread(()-> mHighlightedTextDisplay.setVisibility(View.VISIBLE));
+
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+                runOnUiThread(()->{
+                    mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
+                    mHighlightedTextDisplay.setText("");
+
+                });
+
+
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+                Log.e("UTTERANCE_ERROR", "An Error occurred while synthesizing the given text...");
+                Context context = getApplicationContext();
+                Toast toast = Toast.makeText(context,
+                        "An Error occurred while synthesizing the given text...",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+                mHighlightedTextDisplay.setVisibility(View.INVISIBLE);
+
+            }
+
+            // this method requires min API 26, it could be used for functionalities
+            // such as highlighting the part of the text that is being synthesized
+            // However, this app is min API 23
+
+            @RequiresApi(Build.VERSION_CODES.O)
+            @Override
+            public void onRangeStart(String utteranceId, int start, int end, int frame) {
+                super.onRangeStart(utteranceId, start, end, frame);
+
+                Log.i("Current_Synth_Progress", "onRangeStart > utteranceId: " + utteranceId + ", start: " + start
+                        + ", end: " + end + ", frame: " + frame);
+
+                runOnUiThread(()->{
+                    Spannable textWithHighlights = new SpannableString(mEditText.getText());
+
+                    textWithHighlights.setSpan(new ForegroundColorSpan(Color.BLACK),
+                            start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                    textWithHighlights.setSpan(new BackgroundColorSpan(Color.YELLOW),
+                            start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+                    mHighlightedTextDisplay.setText(textWithHighlights);
+
+                });
+
+
+            }
+        });
     }
 
     @Override
