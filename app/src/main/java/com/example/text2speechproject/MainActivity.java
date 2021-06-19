@@ -41,6 +41,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+/*
+* Main activity of the class, it also implements the OnInitListener interface to be
+* able to create the TextToSpeech instance
+* */
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
 
     private static final String READ_OUT_FROM_FILE_FRAGMENT = "read_out_from_file_fragment";
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         checkPermissions();
 
 
+            //Array adapter for preparing the  dropdown menu for the languages
             ArrayAdapter<CharSequence> adapterLanguage = ArrayAdapter.createFromResource(this,R.array.array_languages,R.layout.dropdown_item);
             mAutoCompleteLanguages.setAdapter(adapterLanguage);
             mAutoCompleteLanguages.setOnItemClickListener((parent, view, position, id) -> {
@@ -98,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 setTTSLanguage();
 
             });
+        //Array adapter for preparing the  dropdown menu for the voices
         ArrayAdapter<CharSequence> adapterVoice = ArrayAdapter.createFromResource(this,R.array.array_voices,R.layout.dropdown_item);
         mAutoCompleteVoices.setAdapter(adapterVoice);
         mAutoCompleteVoices.setOnItemClickListener((parent, view, position, id) -> {
@@ -122,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mEditText.setHint(getString(R.string.input_text));
 
 
-
+        // Hard coded voiceName strings assigned to their respective locales
         usVoices.add("en-us-x-sfg#female_1-local");
         usVoices.add("en-us-x-sfg#male_1-local");
         voiceOptionsList.put(Locale.US, usVoices);
@@ -160,24 +166,24 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     }
 
+    /*
+    * When we create an action intent for checking whether the device has the
+    * TTS resources installed, this method is called
+    * If the resources are available, the TTS instance is created, otherwise the user
+    * will be informed and directed to install the required resources */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // ttsInstalled is the request code we used when creating check tts data intent
         if(requestCode == ttsInstalled){
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS){
-                // initalize tts engine
+                // initalize google tts engine
                 mTts = new TextToSpeech(this,this, "com.google.android.tts");
 
-                // Some audio configs to configure our synthesized speech
-                // but it requires level 26 api, and currently this app supports min 21 leve
-//                AudioAttributes audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANT)
-//                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build();
-//
-//
             }else {
                 Toast.makeText(this, "There is NO TTS available! Please install the Google TTS engine"+
-                        " from the Play Store.", Toast.LENGTH_LONG).show();
+                        " from the Store.", Toast.LENGTH_LONG).show();
 
                 Intent installTTSEngineIntent = new Intent()
                         .setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
@@ -201,6 +207,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         return voiceData;
     }
 
+
+
+
+    /*
+    * support method to check the available languages
+    * Instead of hard coding the languages and the voices, by getting all the
+    * available languages and available voices for each lang., then inflating a menu
+    * to showcase them, could be much better solution. However, I had problems with it when I first
+    * started the project and decided not to do it because of the time constraints
+     * */
     private void printOutSupportedLanguages(){
         // Supported languages
         Set<Locale> supportedLanguages = mTts.getAvailableLanguages();
@@ -211,19 +227,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     }
 
+    // A support method to check the available voices
     private void printOutSupportedVoices(){
         Set<Voice> availableVoices = mTts.getVoices();
         if (availableVoices != null){
             for (Voice voice : availableVoices){
                 if (!voice.isNetworkConnectionRequired() &&  !voice.getFeatures().contains("notInstalled")){
-                    Log.e("TTS", "Current Locale: " + voice);
+                    Log.e("TTS", "Voice Detail: " + voice);
                 }
             }
         }
     }
 
     /*
-    * Gets the locale selection from the radio buttons
+    * Gets the locale(language) selection from the dropdown menu
     * then this selection is used for determining the synthesis language
     * */
     private Locale getUserSelectedLanguage(String language){
@@ -254,7 +271,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private String getSelectedVoiceName(String voiceName){
         Locale selectedLanguage = this.getUserSelectedLanguage(currentLanguage);
-//        int checkedRadioId = this.mRadioGroupVoices.getCheckedRadioButtonId();
         if (voiceName != null){
             switch (voiceName){
                 case "Voice_1":
@@ -264,7 +280,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
 
         }
-        // if no voice is selected, return inde
+        // if no voice is selected, return the first voice
+        // TODO: check this logic again
+        Log.e("getVoiceFunc", "Selected language: "+ selectedLanguage);
         return Objects.requireNonNull(voiceOptionsList.get(selectedLanguage)).get(0);
     }
 
@@ -304,12 +322,18 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
 
+    /*
+    * This method starts the activity that checks the availability of the TTS resources
+    * */
     private void checkTTSEngine(){
         Intent checkTTSIntent = new Intent();
         checkTTSIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkTTSIntent, ttsInstalled);
     }
 
+    /*
+    * This method is for modifying the speech rate and the pitch of the synthesis
+    * */
     private void setPitchAndSpeed(){
         // add a seekbar to manipulate the pitch of the synthesis
         float pitch = (float) mSeekBarPitch.getProgress() / 50;
@@ -323,6 +347,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
 
+    /*
+    * A method for setting the specific synthesis parameters
+    * and calling the speak method of the TTS engine
+    * */
     private void speakInputText() {
         // get the text input to be synthesised from the editText
         String text = mEditText.getText().toString();
@@ -355,6 +383,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         fragmentTransaction.add(android.R.id.content, readOutFromFileFragment).addToBackStack(READ_OUT_FROM_FILE_FRAGMENT).commit();
     }
 
+    // A method for checking the required permissions
     private void checkPermissions() {
         permissionsUtil = new PermissionsUtil();
         permissionsUtil.checkAndRequestPermissions(this,
@@ -362,6 +391,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
+
+    /*
+    * This method initializes the setOnUtteranceProgressListener when the speak button is clicked
+    * creating a new object every time a synthesis starts is probably not good
+    * for efficiency, but creating this object in onCreate method then later passing the mTTS object
+    * to the fragment caused some problematic behaviour, then I decided to create a fresh object
+    * in both activity and fragment when the speak buttons are clicked
+    * */
     private void utteranceListenerStarter(){
         mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
@@ -393,15 +430,18 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
             }
 
-            // this method requires min API 26, it could be used for functionalities
-            // such as highlighting the part of the text that is being synthesized
 
+            /*
+            *  this method requires min API 26, it could be used for functionalities
+            *  such as highlighting the part of the text that is being synthesized,
+            *
+            * */
             @RequiresApi(Build.VERSION_CODES.O)
             @Override
             public void onRangeStart(String utteranceId, int start, int end, int frame) {
                 super.onRangeStart(utteranceId, start, end, frame);
 
-                Log.i("Current_Synth_Progress", "onRangeStart > utteranceId: " + utteranceId + ", start: " + start
+                Log.i("Current_Synthesis_Progress", "onRangeStart > utteranceId: " + utteranceId + ", start: " + start
                         + ", end: " + end + ", frame: " + frame);
 
                 runOnUiThread(()->{

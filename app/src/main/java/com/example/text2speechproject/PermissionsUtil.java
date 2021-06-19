@@ -13,8 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+* A utility class for checking all the required permissions for the app to run
+* */
 public class PermissionsUtil {
-    private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 100; // any code you want.
+    private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 100;
 
     public void checkAndRequestPermissions(Activity activity, String... permissions) {
         List<String> listPermissionsNeeded = new ArrayList<>();

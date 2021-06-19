@@ -49,12 +49,26 @@ import br.com.onimur.handlepathoz.HandlePathOzListener;
 import br.com.onimur.handlepathoz.model.PathOz;
 
 
+/*
+* A Fragment (sub-activity) that handles searching for and opening  a PDF file
+* Also extracts the text and prepares it to be synthesized to speech
+*
+* The class also implements the  HandlePathOzListener which waits for file picking
+* requests and directs them to its handler
+* */
 public class ReadOutFromFileFragment extends Fragment implements HandlePathOzListener.SingleUri{
 
     private static final int READ_REQUEST_CODE = 42;
     private static final String FRAGMENT_GENERAL_UTTERANCE_ID = "fragment_general_utterance_id";
 
+
+    /*
+     * This library is used for real path of files to be able to use them in the application
+     * Because when we retrieve a Uri through an intent, the path we get is not the exact real path
+     * of the file
+     */
     private HandlePathOz handlePathOz;
+
     private TextToSpeech mTts;
     private Button mButtonUploadPDF;
     private Button mButtonReadText;
@@ -116,11 +130,16 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
                 handlePathOz.getRealPath(uri);
 
             }
-            Log.e("OAR_ERROR", "result data is NULLLLL");
+//            Log.e("OAR_ERROR", "result data is NULLLLL");
         }
-        Log.e("RQ_ERROR", "REQUEST CODES ARE NOT EVEN");
+//        Log.e("RQ_ERROR", "REQUEST CODES ARE NOT EVEN");
     }
 
+    /*
+    * Creates a PdfReader object that gets the full file path from handlePathOz,
+    * then extracts the text content of the file
+    * TODO: set a threshold for the file size, or maybe make it so it could be chosen by the user
+    * */
     private void readPdfFile(String path) {
 
         try {
@@ -129,12 +148,14 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
             Log.i("PDF_CONTENTS", "The pdf content: "+ fileTextContent);
             pdfReader.close();
 
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /*
+    * Sets parameters for the synthesis, and calls the method speak of TTS object
+    * */
     private void speakExtractedText(TextToSpeech tts, String fileTextContent){
         Bundle dataMap = new Bundle();
         dataMap.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, 0f);
@@ -250,6 +271,10 @@ public class ReadOutFromFileFragment extends Fragment implements HandlePathOzLis
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    * After receiving a request handles the further needed actions
+    * such as passing the full path of the file to the readPdfFile method
+    * */
     @Override
     public void onRequestHandlePathOz(@NotNull PathOz pathOz, @Nullable Throwable throwable) {
         readPdfFile(pathOz.getPath());
